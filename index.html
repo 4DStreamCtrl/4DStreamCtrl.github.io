@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4DStreamCtrl: Interactive Video Generation with Online 4D Control</title>
+  <meta name="description" content="4DStreamCtrl unifies 3D point tracks, camera motion, and depth into a single conditioning interface for interactive, streaming 4D-controllable video generation.">
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-content">
+      <a href="#hero" class="nav-logo">
+        <img src="assets/logo.png" alt="Logo" class="nav-logo-img">
+        <span>4DStreamCtrl</span>
+      </a>
+      <div class="nav-links">
+        <a href="#abstract">Abstract</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#streaming">Streaming</a>
+        <a href="#comparison">Comparison</a>
+        <a href="#visualization">3D Tracks</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Section 1: Hero -->
+  <section id="hero" class="hero-section">
+    <canvas id="particle-canvas"></canvas>
+    <div class="hero-content fade-in">
+      <!-- <div class="hero-badge">Arxiv 2026</div> -->
+      <img src="assets/logo.png" alt="4DStreamCtrl Logo" class="hero-logo">
+      <h1 class="hero-title">
+        <span class="gradient-text">4DStreamCtrl</span>
+      </h1>
+      <p class="hero-subtitle">Interactive Video Generation with Online 4D Control</p>
+      <p class="hero-desc">Unifying 3D point tracks, camera motion, and depth into a single conditioning interface for real-time streaming 4D-controllable video generation.</p>
+      <div class="hero-buttons">
+        <a href="#" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Paper (coming soon)
+        </a>
+        <a href="#" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          Code (coming soon)
+        </a>
+        <a href="#results" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Video
+        </a>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- Section 2: Abstract -->
+  <section id="abstract" class="section">
+    <div class="container">
+      <h2 class="section-title fade-in">
+        <span class="gradient-text">Abstract</span>
+      </h2>
+      <div class="abstract-card glass-card fade-in">
+        <p>
+          Diffusion-based video generation achieves impressive quality, yet existing methods offer limited fine-grained motion control: camera-parameter approaches cannot manipulate objects, 2D trajectory methods lack depth awareness, and recent 3D-aware methods are restricted to offline, fixed-length generation.
+        </p>
+        <p>
+          We present <strong class="highlight">4DStreamCtrl</strong>, built on the insight that
+          <strong class="highlight">camera motion, object trajectories, and depth can be unified into a single 3D point track representation</strong>.
+          We construct a million-scale 3D track dataset from in-the-wild videos and design a lightweight
+          <strong class="highlight">Geometric Motion Head</strong> that encodes these signals into pre-trained video diffusion models,
+          enabling joint camera–object control, depth editing, and motion transfer in one forward pass.
+        </p>
+        <p>
+          We further distill the teacher into a <strong class="highlight">causal streaming student</strong> with attention sinks and local windows for constant-memory, arbitrarily long generation.
+          4DStreamCtrl runs at <strong class="highlight">16 FPS on a single H100</strong> for 480p video, achieving state-of-the-art control precision while enabling, for the first time, truly interactive 4D-controllable streaming video generation.
+        </p>
+      </div>
+      <div class="highlights-grid fade-in">
+        <div class="highlight-item glass-card">
+          <div class="highlight-icon">🎯</div>
+          <div class="highlight-label">Unified 4D Control</div>
+          <div class="highlight-desc">Camera, object, and depth control via a single 3D track interface</div>
+        </div>
+        <div class="highlight-item glass-card">
+          <div class="highlight-icon">⚡</div>
+          <div class="highlight-label">16 FPS Streaming</div>
+          <div class="highlight-desc">Real-time interactive generation on a single H100 GPU</div>
+        </div>
+        <div class="highlight-item glass-card">
+          <div class="highlight-icon">♾️</div>
+          <div class="highlight-label">Infinite Length</div>
+          <div class="highlight-desc">Constant-memory generation for arbitrarily long videos</div>
+        </div>
+        <div class="highlight-item glass-card">
+          <div class="highlight-icon">🏆</div>
+          <div class="highlight-label">State-of-the-Art</div>
+          <div class="highlight-desc">Best EPE (5.29) and LPIPS (0.404) on DAVIS validation</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Method -->
+  <section id="method" class="section">
+    <div class="container">
+      <h2 class="section-title fade-in">
+        <span class="gradient-text">Method</span>
+      </h2>
+      <p class="section-desc fade-in">4DStreamCtrl consists of three core components: a scalable 3D track dataset, a geometric motion-conditioned video model, and a streaming distillation pipeline for interactive control.</p>
+
+      <div class="method-diagram fade-in">
+        <img src="assets/overview.png" alt="4DStreamCtrl Overview" class="method-img">
+      </div>
+
+      <div class="method-cards fade-in">
+        <div class="method-card glass-card">
+          <div class="method-card-number">01</div>
+          <h3>3D Track Dataset</h3>
+          <p>Million-scale dataset mined from OpenVid-1M with dense 3D point trajectories, camera intrinsics/extrinsics, and foreground/background decomposition via SpatialTrackerV2.</p>
+        </div>
+        <div class="method-card glass-card">
+          <div class="method-card-number">02</div>
+          <h3>Geometric Motion Head</h3>
+          <p>Lightweight module that rasterizes 3D tracks onto the VAE latent grid with sinusoidal identity embeddings and a separate depth branch, fused via channel concatenation with the Wan 2.2 DiT backbone.</p>
+        </div>
+        <div class="method-card glass-card">
+          <div class="method-card-number">03</div>
+          <h3>Streaming Distillation</h3>
+          <p>Self-forcing + DMD distillation produces a causal student with block-wise attention, attention sinks, and KV-cache reuse — generating each chunk in only 4 denoising steps (12.5× faster).</p>
+        </div>
+      </div>
+
+      <!-- <div class="method-diagram fade-in" style="margin-top: 3rem;">
+        <img src="assets/model.pdf.png" alt="4DStreamCtrl Model Architecture" class="method-img">
+      </div> -->
+    </div>
+  </section>
+
+  <!-- Section 4: Results -->
+  <section id="results" class="section">
+    <div class="container">
+      <h2 class="section-title fade-in">
+        <span class="gradient-text">Results</span>
+      </h2>
+      <p class="section-desc fade-in">4DStreamCtrl supports five control modalities within a single unified model.</p>
+
+      <div class="tabs fade-in">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="object">Object Control</button>
+          <button class="tab-btn" data-tab="camera">Camera Control</button>
+          <button class="tab-btn" data-tab="joint">Joint Control</button>
+          <button class="tab-btn" data-tab="depth">Depth Control</button>
+          <button class="tab-btn" data-tab="transfer">Motion Transfer</button>
+        </div>
+
+        <div class="tab-content active" id="tab-object">
+          <div class="tab-desc">
+            <h3>Object Motion Control</h3>
+            <p>Manipulate the trajectory of individual objects using 3D point tracks. The model faithfully follows specified motion paths while maintaining visual plausibility.</p>
+          </div>
+          <div class="video-grid-2">
+            <div class="video-card glass-card">
+              <div class="video-label">Move Hands Forward</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/xjuylmfhxIk_57_63to270_track.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-card glass-card">
+              <div class="video-label">Move Hands Backward</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/xjuylmfhxIk_57_63to270_reverse_track.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-camera">
+          <div class="tab-desc">
+            <h3>Camera Motion Control</h3>
+            <p>Precisely control camera viewpoint, including pan, zoom, and orbit, through camera-aware 3D track conditioning.</p>
+          </div>
+          <div class="video-grid-2">
+            <div class="video-card glass-card">
+              <div class="video-label">Zoom In</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/wn9OXoOWMV0_32_0to109_reverse_track.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-card glass-card">
+              <div class="video-label">Zoom Out</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/wn9OXoOWMV0_32_0to109_track.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-joint">
+          <div class="tab-desc">
+            <h3>Joint Camera &amp; Object Control</h3>
+            <p>Simultaneously coordinate object dynamics with camera motion in a single forward pass—both are unified through 3D point tracks.</p>
+          </div>
+          <div class="video-grid-2">
+            <div class="video-card glass-card">
+              <div class="video-label">Joint Control Example 1</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/YIVvOdFi8wk_5_0to263_track.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-card glass-card">
+              <div class="video-label">Joint Control Example 2</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/1OpeINSyvWk_29_0to101_track.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-depth">
+          <div class="tab-desc">
+            <h3>Depth-Aware Control</h3>
+            <p>Condition generation on depth signals for spatially consistent results. 3D tracks with explicit depth resolve ambiguities that 2D-only methods cannot handle.</p>
+          </div>
+          <div class="video-grid-2">
+            <div class="video-card glass-card">
+              <div class="video-label">Red Car in Front</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/wan_motion_overlay.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-card glass-card">
+              <div class="video-label">White Car in Front</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/wan_motion_overlay-2.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-transfer">
+          <div class="tab-desc">
+            <h3>Motion Transfer</h3>
+            <p>Extract decomposed 4D motion (camera, human, background) from a source video and retarget it onto a new visual appearance via style transfer — preserving 3D-consistent dynamics.</p>
+          </div>
+          <div class="video-grid-2">
+            <div class="video-card glass-card">
+              <div class="video-label">Source Video</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/q7LGadWaOvA_3_19to166_track.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-card glass-card">
+              <div class="video-label">Transferred Video</div>
+              <video autoplay muted loop playsinline>
+                <source src="videos/motion_transfer_kitchen.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Interactive Streaming -->
+  <section id="streaming" class="section">
+    <div class="container">
+      <h2 class="section-title fade-in">
+        <span class="gradient-text">Interactive Streaming Demo</span>
+      </h2>
+      <p class="section-desc fade-in">Users can interactively steer the generation by providing control signals (e.g., dragging objects) while the video streams in real time at 16 FPS on a single H100 GPU.</p>
+
+      <div class="streaming-demo fade-in">
+        <div class="streaming-card glass-card">
+          <div class="streaming-badge">Real-time · 30s Session · Single H100</div>
+          <video autoplay muted loop playsinline controls class="streaming-video" id="streaming-video">
+            <source src="videos/stream_duck_spoon.mp4" type="video/mp4">
+          </video>
+          <div class="streaming-info">
+            <div class="streaming-stat">
+              <span class="stat-value">16</span>
+              <span class="stat-label">FPS</span>
+            </div>
+            <div class="streaming-stat">
+              <span class="stat-value">480p</span>
+              <span class="stat-label">Resolution</span>
+            </div>
+            <div class="streaming-stat">
+              <span class="stat-value">4</span>
+              <span class="stat-label">Denoise Steps</span>
+            </div>
+            <div class="streaming-stat">
+              <span class="stat-value">∞</span>
+              <span class="stat-label">Length</span>
+            </div>
+          </div>
+          <p class="streaming-caption">The user dynamically introduces a spoon to interact with a rubber duck over a 30-second session. The model continuously generates coherent video frames that respond to evolving input in a streaming fashion.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Comparison -->
+  <section id="comparison" class="section">
+    <div class="container">
+      <h2 class="section-title fade-in">
+        <span class="gradient-text">Comparison &amp; Ablation</span>
+      </h2>
+
+      <!-- 3D vs 2D -->
+      <div class="comparison-block fade-in">
+        <h3 class="comparison-title">3D Tracks vs 2D Tracks</h3>
+        <p class="comparison-desc">3D track conditioning resolves depth ambiguity that 2D methods cannot handle, producing physically plausible results with correct occlusion ordering.</p>
+        <div class="video-compare">
+          <div class="video-card glass-card">
+            <div class="video-label label-ours">Ours: White car in front (Controllable results)</div>
+            <video autoplay muted loop playsinline>
+              <source src="videos/3d.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="video-card glass-card">
+            <div class="video-label label-baseline">2D Tracks: White car in front (Random results)</div>
+            <video autoplay muted loop playsinline>
+              <source src="videos/2d_nodepth.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <!-- With vs Without Track -->
+      <div class="comparison-block fade-in">
+        <h3 class="comparison-title">With vs Without Point Track Conditioning</h3>
+        <p class="comparison-desc">Without track guidance, objects exhibit unnatural behavior (size growth, implausible rotation). Track conditioning enforces spatial consistency and physically coherent interactions.</p>
+        <div class="video-compare">
+          <div class="video-card glass-card">
+            <div class="video-label label-ours">With Track</div>
+            <video autoplay muted loop playsinline>
+              <source src="videos/rolling_ball_track.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="video-card glass-card">
+            <div class="video-label label-baseline">Without Track</div>
+            <video autoplay muted loop playsinline>
+              <source src="videos/rolling_ball_without_track.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <div class="video-compare" style="margin-top: 2rem;">
+          <div class="video-card glass-card">
+            <div class="video-label label-ours">With Track</div>
+            <video autoplay muted loop playsinline>
+              <source src="videos/push_can_track.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="video-card glass-card">
+            <div class="video-label label-baseline">Without Track</div>
+            <video autoplay muted loop playsinline>
+              <source src="videos/push_can_without_track.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quantitative Results Table -->
+      <div class="comparison-block fade-in">
+        <h3 class="comparison-title">Quantitative Results on DAVIS</h3>
+        <div class="table-wrapper glass-card">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Backbone</th>
+                <th>FPS ↑</th>
+                <th>PSNR ↑</th>
+                <th>SSIM ↑</th>
+                <th>LPIPS ↓</th>
+                <th>EPE ↓</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Image Conductor</td>
+                <td>AnimateDiff</td>
+                <td>2.98</td>
+                <td>11.30</td>
+                <td>0.214</td>
+                <td>0.664</td>
+                <td>91.64</td>
+              </tr>
+              <tr>
+                <td>Go-With-The-Flow</td>
+                <td>CogVideoX-5B</td>
+                <td>0.60</td>
+                <td>15.62</td>
+                <td>0.392</td>
+                <td>0.490</td>
+                <td>41.99</td>
+              </tr>
+              <tr>
+                <td>Diffusion-As-Shader</td>
+                <td>CogVideoX-5B</td>
+                <td>0.29</td>
+                <td>15.80</td>
+                <td>0.372</td>
+                <td>0.483</td>
+                <td>40.23</td>
+              </tr>
+              <tr>
+                <td>ATI</td>
+                <td>Wan 2.1-14B</td>
+                <td>0.23</td>
+                <td>15.33</td>
+                <td>0.374</td>
+                <td>0.473</td>
+                <td>17.41</td>
+              </tr>
+              <tr>
+                <td>MotionStream Teacher</td>
+                <td>Wan 2.2-5B</td>
+                <td>0.74</td>
+                <td>16.10</td>
+                <td>0.466</td>
+                <td>0.427</td>
+                <td>7.86</td>
+              </tr>
+              <tr>
+                <td>MotionStream Causal</td>
+                <td>Wan 2.2-5B</td>
+                <td>10.4</td>
+                <td>16.30</td>
+                <td>0.456</td>
+                <td>0.438</td>
+                <td>11.18</td>
+              </tr>
+              <tr class="row-ours">
+                <td><strong>Ours Teacher</strong></td>
+                <td>Wan 2.2-5B</td>
+                <td>0.84</td>
+                <td>16.04</td>
+                <td><strong>0.479</strong></td>
+                <td><strong>0.404</strong></td>
+                <td><strong>5.29</strong></td>
+              </tr>
+              <tr class="row-ours">
+                <td><strong>Ours Causal</strong></td>
+                <td>Wan 2.2-5B</td>
+                <td><strong>16.3</strong></td>
+                <td>15.48</td>
+                <td>0.457</td>
+                <td>0.426</td>
+                <td>5.48</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: 3D Track Visualization -->
+  <section id="visualization" class="section">
+    <div class="container">
+      <h2 class="section-title fade-in">
+        <span class="gradient-text">Interactive 3D Track Visualization</span>
+      </h2>
+      <p class="section-desc fade-in">Explore the 3D point trajectories extracted from in-the-wild videos. Rotate, zoom, and pan to inspect the reconstructed scene geometry and motion structure.</p>
+
+      <div class="viz-selector fade-in">
+        <button class="viz-btn" data-viz="3DTrack/O71SdTT1bBM_18_407to525.html">Scene 1</button>
+        <button class="viz-btn" data-viz="3DTrack/iGoyB7KYmMY_75_65to200.html">Scene 2</button>
+      </div>
+
+      <div class="viz-container fade-in">
+        <div class="glass-card viz-frame-wrapper">
+          <iframe id="viz-iframe" src="3DTrack/O71SdTT1bBM_18_407to525.html" class="viz-iframe" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Footer / BibTeX -->
+  <section id="citation" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title fade-in">
+        <span class="gradient-text">Citation</span>
+      </h2>
+      <div class="bibtex-card glass-card fade-in">
+        <div class="bibtex-header">
+          <span>BibTeX</span>
+          <button class="copy-btn" id="copy-bibtex" title="Copy to clipboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy</span>
+          </button>
+        </div>
+        <pre class="bibtex-code"><code>@inproceedings{4dstreamctrl2026,
+  title     = {4DStreamCtrl: Interactive Video Generation with Online 4D Control},
+  author    = {4DStreamCtrl Team},
+  year      = {2026}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="assets/logo.png" alt="Logo">
+          <span>4DStreamCtrl</span>
+        </div>
+        <p class="footer-text">Interactive Video Generation with Online 4D Control</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
