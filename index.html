@@ -278,10 +278,22 @@
       <p class="section-desc fade-in">Users can interactively steer the generation by providing control signals (e.g., dragging objects) while the video streams in real time at 20 FPS on a single H100 GPU.</p>
 
       <div class="streaming-demo fade-in">
+        <h3 class="comparison-title" style="text-align: center; margin-bottom: 1.5rem;">2D Interactive Interface (with Depth)</h3>
         <div class="streaming-card glass-card">
           <div class="streaming-badge">Real-time · 30s Session · Single H100</div>
           <video autoplay muted loop playsinline controls class="streaming-video" id="streaming-video">
             <source src="videos/stream_duck_spoon.mp4" type="video/mp4">
+          </video>
+          <p class="streaming-caption">2D interactive control with depth conditioning: the user draws 2D trajectories on the canvas while depth information is jointly provided, enabling depth-aware object manipulation in a streaming fashion.</p>
+        </div>
+      </div>
+
+      <div class="streaming-demo fade-in" style="margin-top: 3rem;">
+        <h3 class="comparison-title" style="text-align: center; margin-bottom: 1.5rem;">3D Interactive Interface</h3>
+        <div class="streaming-card glass-card">
+          <div class="streaming-badge">Real-time · 3D Control · Single H100</div>
+          <video autoplay muted loop playsinline controls class="streaming-video" id="streaming-video-3d">
+            <source src="videos/demo.mp4" type="video/mp4">
           </video>
           <div class="streaming-info">
             <div class="streaming-stat">
@@ -301,7 +313,7 @@
               <span class="stat-label">Length</span>
             </div>
           </div>
-          <p class="streaming-caption">The user dynamically introduces a spoon to interact with a rubber duck over a 30-second session. The model continuously generates coherent video frames that respond to evolving input in a streaming fashion.</p>
+          <p class="streaming-caption">Full 3D interactive control: the user directly manipulates 3D point tracks in a 3D viewport, enabling precise camera and object motion control with real-time visual feedback during streaming generation.</p>
         </div>
       </div>
     </div>
